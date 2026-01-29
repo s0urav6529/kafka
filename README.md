@@ -39,3 +39,9 @@ Run the consume
     node consumer.js
 
 ---
+
+Open Postman for testing
+
+curl -X POST http://localhost:4000/produce \
+ -H "Content-Type: application/json" \
+ -d '{"message":"Hello from Express!"}'
