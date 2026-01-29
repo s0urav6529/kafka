@@ -27,3 +27,15 @@ For see the topics that are in the kafka broker
 then go
 
     /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker:29092 --list
+
+---
+
+Run the produce
+
+    node producer.js
+
+Run the consume
+
+    node consumer.js
+
+---
