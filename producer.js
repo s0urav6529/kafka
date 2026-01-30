@@ -27,7 +27,7 @@ const runProducer = async () => {
 
       try {
         await producer.send({
-          topic: "my-topic", // your existing topic
+          topic: "short-call", // your existing topic
           messages: [{ value: message }],
         });
         console.log(`📤 Message sent: ${message}`);

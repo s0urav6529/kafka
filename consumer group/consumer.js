@@ -22,8 +22,8 @@ const runConsumer = async () => {
     await consumer.connect();
     console.log("✅ Kafka Consumer connected");
 
-    await consumer.subscribe({ topic: "my-topic", fromBeginning: true });
-    console.log("📥 Subscribed to topic: my-topic");
+    await consumer.subscribe({ topic: "short-call", fromBeginning: true });
+    console.log("📥 Subscribed to topic: short-call");
 
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
