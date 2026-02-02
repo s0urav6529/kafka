@@ -1,52 +1,43 @@
 import express from "express";
-import { Kafka } from "kafkajs";
-import { WebSocketServer } from "ws";
+import { Kafka, logLevel } from "kafkajs";
 
 const app = express();
 
-// WebSocket server
-const wss = new WebSocketServer({ port: 5002 });
-console.log("🚀 WebSocket server running on port 5001");
-
-// Kafka setup
 const kafka = new Kafka({
-  clientId: "consumer-api-2",
-  brokers: ["localhost:9092"], // host-mapped Kafka broker
+  clientId: "consumer-api-2", // 🔑 UNIQUE
+  brokers: ["localhost:9092", "localhost:9093"],
+  logLevel: logLevel.INFO,
 });
 
-// Kafka consumer
-const consumer = kafka.consumer({ groupId: "frontend-group-2" });
+const consumer = kafka.consumer({
+  groupId: "frontend-group", // ✅ SAME GROUP
+});
 
 const runConsumer = async () => {
-  try {
-    await consumer.connect();
-    console.log("✅ Kafka Consumer connected");
+  await consumer.connect();
+  console.log("✅ Consumer-2 connected");
 
-    await consumer.subscribe({ topic: "short-call", fromBeginning: true });
-    console.log("📥 Subscribed to topic: short-call");
+  await consumer.subscribe({
+    topic: "notification",
+    fromBeginning: true,
+  });
 
-    await consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
-        const data = message.value.toString();
-        console.log(`📩 Received message from ${topic}[${partition}]: ${data}`);
+  await consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+      console.log(
+        `🔵 Consumer-2 | ${topic}[${partition}] → ${message.value?.toString()}`
+      );
+    },
+  });
 
-        // Broadcast to all WebSocket clients
-        wss.clients.forEach((client) => {
-          if (client.readyState === client.OPEN) {
-            client.send(data);
-          }
-        });
-      },
-    });
-
-    // Optional: Express API to check health
-    app.get("/health", (req, res) => res.json({ status: "ok" }));
-    app.listen(4002, () => console.log("🟢 Express server running on port 4001"));
-
-  } catch (err) {
-    console.error("❌ Kafka consumer error:", err);
-    process.exit(1);
-  }
+  app.listen(4002, () =>
+    console.log("🔵 Consumer-2 server running on port 4002")
+  );
 };
 
 runConsumer();
+
+process.on("SIGINT", async () => {
+  await consumer.disconnect();
+  process.exit(0);
+});

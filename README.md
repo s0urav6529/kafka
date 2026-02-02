@@ -76,5 +76,10 @@ How to increase partitions:
 
 **Note:** can’t decrease partitions later.
 
+If multiple consumer in one group then client id must me unique:
 
+    KafkaJS uses clientId + groupId to identify members
+    
+    Same groupId → ✔️ load balancing (keep this)
+    Different clientId → ✔️ required
 
