@@ -1,49 +1,41 @@
-import express from "express";
-import { Kafka } from "kafkajs";
+import { Kafka } from 'kafkajs';
 
-const app = express();
-app.use(express.json());
-
-// Kafka client setup
 const kafka = new Kafka({
-  clientId: "producer-api",
-  brokers: ["localhost:9092"], // host-mapped broker port from Docker
+  clientId: 'my-nodejs-app',
+  brokers: ['localhost:9092']
 });
 
-// Create producer
 const producer = kafka.producer();
 
-const runProducer = async () => {
-  try {
-    await producer.connect();
-    console.log("✅ Kafka Producer connected");
+const run = async () => {
+  await producer.connect();
+  console.log('Producer connected');
 
-    // POST endpoint to send messages
-    app.post("/produce", async (req, res) => {
-      const message = req.body.message;
-      if (!message) {
-        return res.status(400).json({ error: "Message is required in request body" });
-      }
-
-      try {
-        await producer.send({
-          topic: "my-topic", // your existing topic
-          messages: [{ value: message }],
-        });
-        console.log(`📤 Message sent: ${message}`);
-        res.json({ status: "sent to kafka", message });
-      } catch (err) {
-        console.error("❌ Error sending message:", err);
-        res.status(500).json({ error: "Failed to send message to Kafka" });
-      }
+  for (let i = 1; i <= 10; i++) {
+    // notification topic
+    await producer.send({
+      topic: 'notification',
+      messages: [{ key: `key-${i}`, value: `Notification message ${i}` }]
     });
+    console.log(`Sent to notification: Message ${i}`);
 
-    // Start Express server
-    app.listen(4000, () => console.log("🚀 Producer API running on port 4000"));
-  } catch (err) {
-    console.error("❌ Failed to connect Kafka producer:", err);
-    process.exit(1);
+    // payments topic
+    await producer.send({
+      topic: 'payments',
+      messages: [{ key: `key-${i}`, value: `Payment message ${i}` }]
+    });
+    console.log(`Sent to payments: Message ${i}`);
+
+    // emails topic
+    await producer.send({
+      topic: 'emails',
+      messages: [{ key: `key-${i}`, value: `Email message ${i}` }]
+    });
+    console.log(`Sent to emails: Message ${i}`);
   }
+
+  await producer.disconnect();
+  console.log('Producer disconnected');
 };
 
-runProducer();
+run().catch(err => console.error('Producer error:', err));
