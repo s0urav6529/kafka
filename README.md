@@ -39,3 +39,9 @@ Run the consume
     node consumer.js
 
 ---
+
+### Run Kafka Producer UI
+
+Go to the _kafka-frontend_ directory
+
+    npm run dev
