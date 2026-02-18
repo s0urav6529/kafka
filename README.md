@@ -1,4 +1,6 @@
-To run Kafka on Docker, first confirm your Docker Desktop is running. Then execute the following command from the kafka-docker directory:
+### Run Kafka on Docker
+
+First confirm your Docker Desktop is running. Then execute the following command from the kafka-docker directory:
 
      docker compose up -d
 
@@ -6,37 +8,15 @@ The -d flag runs the docker container in detached mode which is similar to runni
 
     docker logs kafka
 
-For checking docker using successfully-
+For checking docker images running successfully-
 
     docker ps
 
-For using kafka-ui on the browser
+You will see 2 images (kafka, kafka-ui) here.For using kafka-ui on the browser
 
     http://localhost:8080
 
-To shut down the container, run
-
-    docker compose down -v
-
----
-
-For see the topics that are in the kafka broker
-
-    docker exec -it broker bash
-
-then go
-
-    /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker:29092 --list
-
----
-
-Run the produce
-
-    node producer.js
-
-Run the consume
-
-    node consumer.js
+Then go the topic, create topic and make fun.
 
 ---
 
@@ -45,3 +25,17 @@ Run the consume
 Go to the _kafka-frontend_ directory
 
     npm run dev
+
+---
+
+Run the consumer. First go to the _consumers_ directory then _group_ then run using below cmd-
+
+    node consumer-x.js
+
+_x_ is the consumer number.
+
+---
+
+### To shut down the kafka docker container, run
+
+    docker compose down -v
